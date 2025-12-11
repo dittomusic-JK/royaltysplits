@@ -104,17 +104,6 @@
         >
           <template #icon><ReleaseProtectionIcon /></template>
         </FeatureCard>
-
-        <!-- YouTube Content ID -->
-        <FeatureCard
-          title="YouTube Content ID & Shorts"
-          description="Get notified & paid if your music is used in YouTube videos. Ad revenue goes to you."
-          :checked="youTubeSelected"
-          price="£10"
-          @toggle="youTubeSelected = !youTubeSelected"
-        >
-          <template #icon><img src="/images/YoutubeShorts.svg" alt="YouTube" class="w-8 h-8" /></template>
-        </FeatureCard>
       </div>
     </div>
 
@@ -125,6 +114,17 @@
         description="Distribute to specialist music platforms."
       />
       <div class="flex flex-col gap-4">
+        <!-- YouTube Content ID -->
+        <FeatureCard
+          title="YouTube Content ID & Shorts"
+          description="Get notified & paid if your music is used in YouTube videos. Ad revenue goes to you."
+          :checked="youTubeSelected"
+          price="£10"
+          @toggle="youTubeSelected = !youTubeSelected"
+        >
+          <template #icon><img src="/images/YoutubeShorts.svg" alt="YouTube" class="w-8 h-8" /></template>
+        </FeatureCard>
+
         <!-- Audio Fingerprint -->
         <FeatureCard
           title="Audio Fingerprint Services"

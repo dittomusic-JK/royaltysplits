@@ -178,7 +178,16 @@
         >
           <template #icon><ReleaseProtectionIcon /></template>
         </FeatureCard>
+      </div>
+    </div>
 
+    <!-- Advanced Stores Section -->
+    <div>
+      <SectionHeader
+        title="Advanced Stores"
+        description="Distribute to specialist music platforms."
+      />
+      <div class="flex flex-col gap-4">
         <!-- YouTube Content ID -->
         <FeatureCard
           title="YouTube Content ID & Shorts"
@@ -192,16 +201,7 @@
         >
           <template #icon><img src="/images/YoutubeShorts.svg" alt="YouTube" class="w-8 h-8" /></template>
         </FeatureCard>
-      </div>
-    </div>
 
-    <!-- Advanced Stores Section -->
-    <div>
-      <SectionHeader
-        title="Advanced Stores"
-        description="Distribute to specialist music platforms."
-      />
-      <div class="flex flex-col gap-4">
         <!-- Audio Fingerprint Services -->
         <FeatureCard
           title="Audio Fingerprint Services"
