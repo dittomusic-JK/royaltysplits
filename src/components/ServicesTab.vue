@@ -64,28 +64,26 @@
         <template #icon><PreReleaseIcon /></template>
         
         <!-- Pre-release form -->
-        <div v-if="preReleaseSelected" class="space-y-4 pt-2" @click.stop>
+        <div v-if="preReleaseSelected" class="space-y-5 pt-3" @click.stop>
           <!-- Pre-order date picker -->
           <div>
-            <label class="block text-xs text-ditto-grey mb-1 font-satoshi">
-              Pre-order date
+            <label class="block text-sm text-ditto-blue font-satoshi font-medium mb-2">
+              Choose a Pre-order date
             </label>
-            <CustomDropdown
-              :model-value="formattedPreOrderDate"
-              :options="[]"
-              :has-warning="preOrderDateWarning"
-            />
+            <div class="flex items-center gap-2 bg-white rounded-xl border border-faded-grey p-3 cursor-pointer hover:border-brand-secondary transition-all">
+              <span class="flex-1 text-base text-brand-secondary font-satoshi">{{ formattedPreOrderDate }}</span>
+              <ChevronIcon class="w-5 h-5 text-ditto-grey" />
+            </div>
+<p v-if="preOrderDateWarning" class="mt-2 text-xs text-brand-secondary font-satoshi">
+              We cannot guarantee your pre-release will go live in less than 3 days, but will make sure it is available in stores as soon as possible.
+            </p>
           </div>
           
-          <p v-if="preOrderDateWarning" class="text-xs text-ditto-grey font-satoshi">
-            We <span class="underline">cannot guarantee</span> your pre-release will go live in less than 3 days, but will make sure it is available in stores as soon as possible.
-          </p>
-          
           <!-- Instant Gratification toggle -->
-          <div class="flex items-center justify-between pt-2">
+          <div class="flex items-center gap-3">
             <div class="relative group">
               <label class="text-sm text-ditto-blue font-satoshi font-medium cursor-help flex items-center gap-1">
-                Enable Instant Gratification?
+                Add Instant Gratification?
                 <svg class="w-4 h-4 text-ditto-grey" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="10" />
                   <path d="M12 16v-4M12 8h.01" />
@@ -108,10 +106,10 @@
             </button>
           </div>
           
-          <!-- Instant Gratification Tracks (only show when toggle is on) -->
+          <!-- Instant Gratification Track selection (only show when toggle is on) -->
           <div v-if="instantGratification">
-            <label class="block text-xs text-ditto-grey mb-2 font-satoshi">
-              Instant Gratification {{ maxInstantGratTracks > 1 ? 'Tracks' : 'Track' }} (select up to {{ maxInstantGratTracks }})
+            <label class="block text-xs text-ditto-grey font-satoshi mb-2">
+              Select up to <span class="font-semibold">{{ maxInstantGratTracks }}</span> {{ maxInstantGratTracks > 1 ? 'tracks' : 'track' }}
             </label>
             <div class="flex flex-wrap gap-2">
               <button
