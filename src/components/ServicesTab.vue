@@ -82,12 +82,8 @@
           <!-- Instant Gratification toggle -->
           <div class="flex items-center gap-3">
             <div class="relative group">
-              <label class="text-sm text-ditto-blue font-satoshi font-medium cursor-help flex items-center gap-1">
+              <label class="text-sm text-ditto-blue font-satoshi font-medium cursor-help">
                 Add Instant Gratification?
-                <svg class="w-4 h-4 text-ditto-grey" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 16v-4M12 8h.01" />
-                </svg>
               </label>
               <div class="absolute bottom-full left-0 mb-2 px-3 py-2 bg-ditto-blue text-white text-xs rounded-lg w-72 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                 Unlock selected tracks immediately when fans pre-order, giving them a taste of your release before launch. Great for building hype and incentivizing early purchases.
@@ -158,7 +154,7 @@
           v-if="!isDittoPlus"
           title="Auto-release to new platforms"
           :badge="isStarter ? 'Included in Pro' : undefined"
-          badge-variant="grey"
+          badge-variant="green"
           description="Automatically send this release to any new platforms we add in the future."
           :checked="includesAutoRelease ? autoReleaseEnabled : autoReleaseSelected"
           :is-free="includesAutoRelease"
@@ -173,7 +169,7 @@
           v-if="!isDittoPlus"
           title="Release Protection"
           :badge="isStarter ? 'Included in Pro' : undefined"
-          badge-variant="grey"
+          badge-variant="green"
           description="Protect your release from unauthorized distribution across all platforms."
           :checked="includesReleaseProtection ? releaseProtectionEnabled : releaseProtectionSelected"
           :is-free="includesReleaseProtection"
@@ -187,7 +183,7 @@
         <FeatureCard
           title="YouTube Content ID & Shorts"
           :badge="isStarter ? 'Included in Pro' : undefined"
-          badge-variant="grey"
+          badge-variant="green"
           description="Get notified & paid if your music is used in YouTube videos. Ad revenue goes to you."
           :checked="includesYouTube ? youTubeEnabled : youTubeSelected"
           :is-free="includesYouTube"
@@ -210,7 +206,7 @@
         <FeatureCard
           title="Audio Fingerprint Services"
           :badge="isStarter ? 'Available in Pro' : undefined"
-          badge-variant="grey"
+          badge-variant="green"
           description="Register your music with audio fingerprinting services for identification and royalty collection."
           :checked="includesFingerprint ? fingerprintEnabled : false"
           :disabled="!includesFingerprint"

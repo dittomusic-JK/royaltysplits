@@ -84,7 +84,7 @@
         <!-- Auto-release -->
         <FeatureCard
           title="Auto-release to new platforms"
-          badge="Active"
+          badge="Purchased"
           badge-variant="green"
           description="Automatically send this release to any new platforms we add in the future."
           :checked="true"
@@ -113,13 +113,22 @@
           price="£10"
           @toggle="youTubeSelected = !youTubeSelected"
         >
-          <template #icon><img src="/images/YoutubeContent.svg" alt="YouTube" class="w-8 h-8" /></template>
+          <template #icon><img src="/images/YoutubeShorts.svg" alt="YouTube" class="w-8 h-8" /></template>
         </FeatureCard>
+      </div>
+    </div>
 
+    <!-- Advanced Stores Section -->
+    <div>
+      <SectionHeader
+        title="Advanced Stores"
+        description="Distribute to specialist music platforms."
+      />
+      <div class="flex flex-col gap-4">
         <!-- Audio Fingerprint -->
         <FeatureCard
           title="Audio Fingerprint Services"
-          description="Register your music with audio fingerprinting services for content identification."
+          description="Register your music with audio fingerprinting services for identification and royalty collection."
           :checked="fingerprintSelected"
           price="£15"
           @toggle="fingerprintSelected = !fingerprintSelected"
@@ -133,16 +142,16 @@
               :key="provider.name"
               @click.stop="provider.enabled = !provider.enabled"
               class="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-white rounded-xl border cursor-pointer transition-all"
-              :class="provider.enabled ? 'border-[#2680EB]' : 'border-[#e5e5e5] hover:border-[#2680EB]'"
+              :class="provider.enabled ? 'border-brand-secondary' : 'border-faded-grey hover:border-brand-secondary'"
             >
               <img :src="provider.icon" :alt="provider.name" class="w-5 h-5 sm:w-6 sm:h-6" />
-              <span class="text-xs sm:text-sm font-medium text-[#101F3C] font-['Satoshi-Regular']">{{ provider.name }}</span>
+              <span class="text-xs sm:text-sm font-medium text-ditto-blue font-satoshi">{{ provider.name }}</span>
               <div
                 class="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-all bg-white"
-                :class="provider.enabled ? 'border-[#2680EB]' : 'border-[#D2D2E3]'"
+                :class="provider.enabled ? 'border-brand-secondary' : 'border-faded-grey'"
               >
                 <svg v-if="provider.enabled" width="12" height="12" viewBox="0 0 24 24" fill="none">
-                  <path d="M20 6L9 17L4 12" stroke="#2680EB" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M20 6L9 17L4 12" stroke="#287ef7" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </div>
             </div>
@@ -166,7 +175,7 @@
             @click.stop
           >
             <div>
-              <label class="block text-xs text-[#626984] mb-1 font-['Satoshi-Regular']">
+              <label class="block text-xs text-ditto-grey mb-1 font-satoshi">
                 Beatport Label
               </label>
               <BeatportLabelDropdown
@@ -177,13 +186,13 @@
               />
             </div>
             <div>
-              <label class="block text-xs text-[#626984] mb-1 font-['Satoshi-Regular']">
+              <label class="block text-xs text-ditto-grey mb-1 font-satoshi">
                 Primary Genre
               </label>
               <CustomDropdown v-model="beatportPrimaryGenre" :options="beatportGenres" />
             </div>
             <div>
-              <label class="block text-xs text-[#626984] mb-1 font-['Satoshi-Regular']">
+              <label class="block text-xs text-ditto-grey mb-1 font-satoshi">
                 Secondary Genre
               </label>
               <CustomDropdown v-model="beatportSecondaryGenre" :options="beatportGenres" />
