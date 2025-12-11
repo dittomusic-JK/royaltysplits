@@ -53,16 +53,99 @@
     <div>
       <SectionHeader
         title="Pre-release Downloads"
-        description="Allow fans to download your release before the official release date."
       />
-      <ServiceRow
-        title="Pre-release Downloads"
-        price="£29"
-        :selected="preReleaseSelected"
+      <FeatureCard
+        title="Pre-release downloads"
+        description="Offer pre-orders of your music on iTunes and Amazon, granting fans early access and instant gratification with select tracks."
+        :checked="preReleaseSelected"
+        price="+£29"
         @toggle="preReleaseSelected = !preReleaseSelected"
       >
         <template #icon><PreReleaseIcon /></template>
-      </ServiceRow>
+        
+        <!-- Pre-release form -->
+        <div v-if="preReleaseSelected" class="space-y-4 pt-2" @click.stop>
+          <!-- Pre-order date picker -->
+          <div>
+            <label class="block text-xs text-ditto-grey mb-1 font-satoshi">
+              Pre-order date
+            </label>
+            <CustomDropdown
+              :model-value="formattedPreOrderDate"
+              :options="[]"
+              :has-warning="preOrderDateWarning"
+            />
+          </div>
+          
+          <p v-if="preOrderDateWarning" class="text-xs text-ditto-grey font-satoshi">
+            We <span class="underline">cannot guarantee</span> your pre-release will go live in less than 3 days, but will make sure it is available in stores as soon as possible.
+          </p>
+          
+          <!-- Instant Gratification toggle -->
+          <div class="flex items-center justify-between pt-2">
+            <div class="relative group">
+              <label class="text-sm text-ditto-blue font-satoshi font-medium cursor-help flex items-center gap-1">
+                Enable Instant Gratification?
+                <svg class="w-4 h-4 text-ditto-grey" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4M12 8h.01" />
+                </svg>
+              </label>
+              <div class="absolute bottom-full left-0 mb-2 px-3 py-2 bg-ditto-blue text-white text-xs rounded-lg w-72 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                Unlock selected tracks immediately when fans pre-order, giving them a taste of your release before launch. Great for building hype and incentivizing early purchases.
+                <div class="absolute top-full left-4 border-4 border-transparent border-t-ditto-blue"></div>
+              </div>
+            </div>
+            <button
+              @click="instantGratification = !instantGratification"
+              class="relative w-12 h-7 rounded-full transition-colors"
+              :class="instantGratification ? 'bg-success' : 'bg-faded-grey'"
+            >
+              <div
+                class="absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform"
+                :class="instantGratification ? 'translate-x-[22px]' : 'translate-x-0.5'"
+              />
+            </button>
+          </div>
+          
+          <!-- Instant Gratification Tracks (only show when toggle is on) -->
+          <div v-if="instantGratification">
+            <label class="block text-xs text-ditto-grey mb-2 font-satoshi">
+              Instant Gratification {{ maxInstantGratTracks > 1 ? 'Tracks' : 'Track' }} (select up to {{ maxInstantGratTracks }})
+            </label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="track in availableTracks"
+                :key="track"
+                @click="toggleInstantGratTrack(track)"
+                :disabled="!selectedInstantGratTracks.includes(track) && selectedInstantGratTracks.length >= maxInstantGratTracks"
+                class="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border text-sm font-satoshi transition-all"
+                :class="[
+                  selectedInstantGratTracks.includes(track) 
+                    ? 'border-brand-secondary text-ditto-blue' 
+                    : 'border-faded-grey text-ditto-grey',
+                  !selectedInstantGratTracks.includes(track) && selectedInstantGratTracks.length >= maxInstantGratTracks
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:border-brand-secondary cursor-pointer'
+                ]"
+              >
+                <div
+                  class="w-4 h-4 rounded border-2 flex items-center justify-center transition-all"
+                  :class="selectedInstantGratTracks.includes(track) ? 'border-brand-secondary bg-brand-secondary' : 'border-faded-grey'"
+                >
+                  <svg v-if="selectedInstantGratTracks.includes(track)" width="10" height="10" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </div>
+                {{ track }}
+              </button>
+            </div>
+            <p v-if="selectedInstantGratTracks.length === 0" class="mt-2 text-xs text-error font-satoshi">
+              Please select at least one track
+            </p>
+          </div>
+        </div>
+      </FeatureCard>
     </div>
 
     <!-- Distribution Services Section -->
@@ -76,8 +159,8 @@
         <FeatureCard
           v-if="!isDittoPlus"
           title="Auto-release to new platforms"
-          :badge="includesAutoRelease ? (isPro ? 'Included with Pro' : 'Included with Label') : isStarter ? 'Included in Pro' : undefined"
-          :badge-variant="includesAutoRelease ? 'green' : 'grey'"
+          :badge="isStarter ? 'Included in Pro' : undefined"
+          badge-variant="grey"
           description="Automatically send this release to any new platforms we add in the future."
           :checked="includesAutoRelease ? autoReleaseEnabled : autoReleaseSelected"
           :is-free="includesAutoRelease"
@@ -91,8 +174,8 @@
         <FeatureCard
           v-if="!isDittoPlus"
           title="Release Protection"
-          :badge="includesReleaseProtection ? (isPro ? 'Included with Pro' : 'Included with Label') : isStarter ? 'Included in Pro' : undefined"
-          :badge-variant="includesReleaseProtection ? 'green' : 'grey'"
+          :badge="isStarter ? 'Included in Pro' : undefined"
+          badge-variant="grey"
           description="Protect your release from unauthorized distribution across all platforms."
           :checked="includesReleaseProtection ? releaseProtectionEnabled : releaseProtectionSelected"
           :is-free="includesReleaseProtection"
@@ -105,22 +188,31 @@
         <!-- YouTube Content ID -->
         <FeatureCard
           title="YouTube Content ID & Shorts"
-          :badge="includesYouTube ? (isPro ? 'Included with Pro' : isLabel ? 'Included with Label' : undefined) : isStarter ? 'Included in Pro' : undefined"
-          :badge-variant="includesYouTube ? 'green' : 'grey'"
+          :badge="isStarter ? 'Included in Pro' : undefined"
+          badge-variant="grey"
           description="Get notified & paid if your music is used in YouTube videos. Ad revenue goes to you."
           :checked="includesYouTube ? youTubeEnabled : youTubeSelected"
           :is-free="includesYouTube"
           :price="includesYouTube ? undefined : '£10'"
           @toggle="includesYouTube ? (youTubeEnabled = !youTubeEnabled) : (youTubeSelected = !youTubeSelected)"
         >
-<template #icon><img src="/images/YoutubeShorts.svg" alt="YouTube" class="w-8 h-8" /></template>
+          <template #icon><img src="/images/YoutubeShorts.svg" alt="YouTube" class="w-8 h-8" /></template>
         </FeatureCard>
+      </div>
+    </div>
 
+    <!-- Advanced Stores Section -->
+    <div>
+      <SectionHeader
+        title="Advanced Stores"
+        description="Distribute to specialist music platforms."
+      />
+      <div class="flex flex-col gap-4">
         <!-- Audio Fingerprint Services -->
         <FeatureCard
           title="Audio Fingerprint Services"
-          :badge="includesFingerprint ? (isPro ? 'Included with Pro' : isLabel ? 'Included with Label' : 'Included with ++ Label Services') : isStarter ? 'Available in Pro' : undefined"
-          :badge-variant="includesFingerprint ? 'green' : 'grey'"
+          :badge="isStarter ? 'Available in Pro' : undefined"
+          badge-variant="grey"
           description="Register your music with audio fingerprinting services for identification and royalty collection."
           :checked="includesFingerprint ? fingerprintEnabled : false"
           :disabled="!includesFingerprint"
@@ -138,16 +230,16 @@
               :key="provider.name"
               @click.stop="provider.enabled = !provider.enabled"
               class="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-white rounded-xl border cursor-pointer transition-all"
-              :class="provider.enabled ? 'border-[#2680EB]' : 'border-[#e5e5e5] hover:border-[#2680EB]'"
+              :class="provider.enabled ? 'border-brand-secondary' : 'border-faded-grey hover:border-brand-secondary'"
             >
               <img :src="provider.icon" :alt="provider.name" class="w-5 h-5 sm:w-6 sm:h-6" />
-              <span class="text-xs sm:text-sm font-medium text-[#101F3C] font-['Satoshi-Regular']">{{ provider.name }}</span>
+              <span class="text-xs sm:text-sm font-medium text-ditto-blue font-satoshi">{{ provider.name }}</span>
               <div
                 class="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-all bg-white"
-                :class="provider.enabled ? 'border-[#2680EB]' : 'border-[#D2D2E3]'"
+                :class="provider.enabled ? 'border-brand-secondary' : 'border-faded-grey'"
               >
                 <svg v-if="provider.enabled" width="12" height="12" viewBox="0 0 24 24" fill="none">
-                  <path d="M20 6L9 17L4 12" stroke="#2680EB" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M20 6L9 17L4 12" stroke="#287ef7" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </div>
             </div>
@@ -157,8 +249,6 @@
         <!-- Beatport -->
         <FeatureCard
           title="Beatport Distribution"
-          :badge="includesBeatport ? 'Included with ++ Label Services' : undefined"
-          badge-variant="green"
           description="You need a label set up with Beatport to release your music on this store."
           :checked="includesBeatport ? beatportEnabled : beatportSelected"
           :is-free="includesBeatport"
@@ -174,7 +264,7 @@
             @click.stop
           >
             <div>
-              <label class="block text-xs text-[#626984] mb-1 font-['Satoshi-Regular']">
+              <label class="block text-xs text-ditto-grey mb-1 font-satoshi">
                 Beatport Label
               </label>
               <BeatportLabelDropdown
@@ -185,13 +275,13 @@
               />
             </div>
             <div>
-              <label class="block text-xs text-[#626984] mb-1 font-['Satoshi-Regular']">
+              <label class="block text-xs text-ditto-grey mb-1 font-satoshi">
                 Primary Genre
               </label>
               <CustomDropdown v-model="beatportPrimaryGenre" :options="beatportGenres" />
             </div>
             <div>
-              <label class="block text-xs text-[#626984] mb-1 font-['Satoshi-Regular']">
+              <label class="block text-xs text-ditto-grey mb-1 font-satoshi">
                 Secondary Genre
               </label>
               <CustomDropdown v-model="beatportSecondaryGenre" :options="beatportGenres" />
@@ -231,7 +321,7 @@ import CheckoutButton from './CheckoutButton.vue'
 import CustomDropdown from './CustomDropdown.vue'
 import BeatportLabelDropdown from './BeatportLabelDropdown.vue'
 import BeatportLabelModal from './BeatportLabelModal.vue'
-import { ChartsIcon, ChartsGlobalIcon, PreReleaseIcon, AutoReleaseIcon, ReleaseProtectionIcon } from './icons'
+import { ChartsIcon, ChartsGlobalIcon, PreReleaseIcon, AutoReleaseIcon, ReleaseProtectionIcon, ChevronIcon } from './icons'
 
 const props = defineProps<{
   plan: Plan
@@ -276,6 +366,41 @@ const autoReleaseSelected = ref(false)
 const releaseProtectionSelected = ref(false)
 const youTubeSelected = ref(false)
 const beatportSelected = ref(false)
+
+// Pre-release state
+const showDatePicker = ref(false)
+const preOrderDate = ref(new Date('2024-09-30'))
+const instantGratification = ref(false)
+const selectedInstantGratTracks = ref<string[]>([])
+const availableTracks = ['My Big Day', 'Summer Nights', 'Into the Light', 'Dreamscape', 'Final Hour']
+
+const toggleInstantGratTrack = (track: string) => {
+  const index = selectedInstantGratTracks.value.indexOf(track)
+  if (index > -1) {
+    selectedInstantGratTracks.value.splice(index, 1)
+  } else if (selectedInstantGratTracks.value.length < maxInstantGratTracks.value) {
+    selectedInstantGratTracks.value.push(track)
+  }
+}
+
+const formattedPreOrderDate = computed(() => {
+  const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }
+  return preOrderDate.value.toLocaleDateString('en-GB', options)
+})
+
+const preOrderDateWarning = computed(() => {
+  const now = new Date()
+  const diffDays = Math.ceil((preOrderDate.value.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  return diffDays < 3
+})
+
+// Max instant grat tracks based on release length: 1-3 tracks = 1, 4-7 = 2, 8-12 = 3
+const releaseTrackCount = computed(() => availableTracks.length)
+const maxInstantGratTracks = computed(() => {
+  if (releaseTrackCount.value <= 3) return 1
+  if (releaseTrackCount.value <= 7) return 2
+  return 3
+})
 
 // Charts toggle handlers (mutual exclusivity with worldwide)
 const toggleChartsUK = () => {

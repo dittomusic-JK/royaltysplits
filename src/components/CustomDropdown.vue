@@ -1,14 +1,31 @@
 <template>
   <div ref="dropdownRef" class="relative">
     <div
-      @click="isOpen = !isOpen"
+      @click="options.length > 0 ? (isOpen = !isOpen) : undefined"
       class="flex items-center justify-between p-3 bg-white rounded-xl border cursor-pointer transition-all"
-      :class="isOpen ? 'border-[#2680EB]' : 'border-[#D2D2E3] hover:border-[#2680EB]'"
+      :class="borderClass"
     >
-      <span class="text-sm text-[#101F3C] font-['Satoshi-Regular'] truncate pr-2">
+      <span 
+        class="text-sm font-satoshi truncate pr-2"
+        :class="modelValue ? 'text-ditto-blue' : 'text-ditto-grey'"
+      >
         {{ modelValue || placeholder }}
       </span>
-      <ChevronIcon :rotated="isOpen" />
+      <div class="flex items-center gap-2">
+        <div
+          v-if="hasWarning"
+          class="w-5 h-5 rounded-full bg-brand-secondary text-white flex items-center justify-center text-xs font-bold"
+        >
+          !
+        </div>
+        <div
+          v-if="hasError"
+          class="w-5 h-5 rounded-full bg-error text-white flex items-center justify-center text-xs font-bold"
+        >
+          !
+        </div>
+        <ChevronIcon v-if="options.length > 0" :rotated="isOpen" />
+      </div>
     </div>
     <div
       v-if="isOpen"
@@ -35,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ChevronIcon } from './icons'
 
 const props = withDefaults(defineProps<{
@@ -43,8 +60,17 @@ const props = withDefaults(defineProps<{
   options: string[]
   placeholder?: string
   addNewLabel?: string
+  hasWarning?: boolean
+  hasError?: boolean
 }>(), {
   placeholder: 'Select...'
+})
+
+const borderClass = computed(() => {
+  if (props.hasError) return 'border-error'
+  if (props.hasWarning) return 'border-warning'
+  if (isOpen.value) return 'border-brand-secondary'
+  return 'border-faded-grey hover:border-brand-secondary'
 })
 
 const emit = defineEmits<{
