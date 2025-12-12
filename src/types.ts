@@ -6,3 +6,32 @@ export interface LabelOption {
   name: string
   isBeatportLabel: boolean
 }
+
+// Royalty Splits Types
+export type UserType = 'subscription' | 'rls'
+export type SplitStatus = 'active' | 'unconfirmed' | 'unclaimed'
+
+export interface Collaborator {
+  id: string
+  name: string
+  email: string
+  share: number
+  status: SplitStatus
+  activeSince?: string
+}
+
+export interface TrackSplit {
+  trackId: string
+  trackNumber: number
+  trackName: string
+  splits: Collaborator[]
+  userShare: number
+}
+
+export interface Release {
+  id: string
+  title: string
+  artwork: string
+  accountHolder: string
+  tracks: TrackSplit[]
+}

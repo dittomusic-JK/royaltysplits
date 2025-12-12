@@ -1,0 +1,208 @@
+<template>
+  <div class="bg-lighter-grey border-t border-b-2 border-faded-grey px-3 sm:px-6 py-4 rounded-b-xl">
+    <!-- User's split summary -->
+    <div class="flex items-center gap-3 sm:gap-4 pb-4 border-b border-faded-grey">
+      <div>
+        <span class="text-xs text-ditto-grey font-satoshi">You:</span>
+        <p class="text-sm font-semibold text-ditto-blue font-satoshi">{{ accountHolder }}</p>
+      </div>
+      <div>
+        <span class="text-xs text-ditto-grey font-satoshi">Your Split:</span>
+        <p class="text-sm font-bold text-ditto-purple font-satoshi">{{ userShare }}%</p>
+      </div>
+      <DonutChart
+        :segments="userDonutSegments"
+        :user-share="userShare"
+        :size="48"
+        :stroke-width="8"
+        :show-badge="false"
+      />
+    </div>
+
+    <!-- Splits section header -->
+    <div class="flex items-center justify-between py-4">
+      <h4 class="text-base font-bold text-ditto-blue font-poppins">
+        Splits{{ existingSplits.length > 0 ? ` (${existingSplits.length})` : '' }}
+      </h4>
+      <button
+        @click="$emit('close')"
+        class="p-1 text-ditto-grey hover:text-ditto-blue transition-colors"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Existing splits (read-only) -->
+    <div v-if="existingSplits.length > 0" class="divide-y divide-faded-grey">
+      <SplitRow
+        v-for="(split, index) in existingSplits"
+        :key="split.id"
+        :name="split.name"
+        :email="split.email"
+        :share="split.share"
+        :status="split.status"
+        :active-since="split.activeSince"
+        :share-index="index + 1"
+        :is-editable="false"
+        :can-edit-email="split.status === 'unclaimed'"
+        @remove="$emit('remove-split', split.id)"
+        @edit-share="$emit('edit-split', split.id)"
+        @resend="$emit('resend-confirmation', split.id)"
+      />
+    </div>
+
+    <!-- New split entry row -->
+    <div class="border-t border-faded-grey pt-4">
+      <SplitRow
+        :name="newSplit.name"
+        :email="newSplit.email"
+        :share="newSplit.share"
+        :is-editable="true"
+        @update="handleNewSplitUpdate"
+        @remove="clearNewSplit"
+      />
+    </div>
+
+    <!-- Action buttons -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-faded-grey mt-4">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+        <!-- Add more button -->
+        <button
+          @click="addNewSplit"
+          :disabled="!canAddSplit"
+          class="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 border border-ditto-blue rounded-full text-sm font-semibold text-ditto-blue font-satoshi hover:bg-ditto-blue/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 5V11M5 8H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Add more
+        </button>
+
+        <!-- Copy Splits dropdown -->
+        <div class="relative">
+          <button
+            @click="showCopyDropdown = !showCopyDropdown"
+            class="flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto px-4 py-2 border border-faded-grey rounded-full text-sm font-medium text-ditto-grey font-satoshi hover:border-brand-secondary transition-colors"
+          >
+            Copy Splits from...
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="transition-transform" :class="{ 'rotate-180': showCopyDropdown }">
+              <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div
+            v-if="showCopyDropdown"
+            class="absolute top-full left-0 right-0 sm:right-auto mt-1 bg-white border border-faded-grey rounded-xl shadow-lg py-2 min-w-[200px] z-10"
+          >
+            <button
+              v-for="track in otherTracks"
+              :key="track.trackId"
+              @click="handleCopyFrom(track.trackId)"
+              class="w-full px-4 py-2 text-left text-sm text-ditto-blue font-satoshi hover:bg-light-grey transition-colors"
+            >
+              {{ track.trackName }}
+            </button>
+            <p v-if="otherTracks.length === 0" class="px-4 py-2 text-sm text-ditto-grey font-satoshi">
+              No other tracks with splits
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save button -->
+      <button
+        @click="handleSave"
+        :disabled="!canSave"
+        class="flex items-center justify-center gap-2 px-6 py-2 border border-brand-secondary rounded-full text-sm font-semibold text-brand-secondary font-satoshi hover:bg-brand-secondary/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M13.333 5.333L6 12.667 2.667 9.333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Save Splits
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, reactive } from 'vue'
+import type { Collaborator, TrackSplit } from '../../types'
+import SplitRow from './SplitRow.vue'
+import DonutChart from './DonutChart.vue'
+
+const props = defineProps<{
+  accountHolder: string
+  userShare: number
+  existingSplits: Collaborator[]
+  otherTracks: TrackSplit[]
+  hasChanges?: boolean
+}>()
+
+const emit = defineEmits<{
+  close: []
+  save: []
+  'add-split': [split: { name: string; email: string; share: number }]
+  'remove-split': [id: string]
+  'edit-split': [id: string]
+  'resend-confirmation': [id: string]
+  'copy-from': [trackId: string]
+}>()
+
+const showCopyDropdown = ref(false)
+
+const newSplit = reactive({
+  name: '',
+  email: '',
+  share: 0
+})
+
+const userDonutSegments = computed(() => [
+  { percentage: props.userShare, color: '#6C5CE7' }
+])
+
+const canAddSplit = computed(() => {
+  return newSplit.name.trim() !== '' && 
+         newSplit.email.trim() !== '' && 
+         newSplit.share > 0
+})
+
+// Can save if there are pending changes OR a valid new split to add
+const canSave = computed(() => {
+  return props.hasChanges || canAddSplit.value
+})
+
+// Save handler - add pending split first if valid, then emit save
+const handleSave = () => {
+  if (canAddSplit.value) {
+    emit('add-split', { ...newSplit })
+    clearNewSplit()
+  }
+  emit('save')
+}
+
+const handleNewSplitUpdate = (data: { name: string; email: string; share: number }) => {
+  newSplit.name = data.name
+  newSplit.email = data.email
+  newSplit.share = data.share
+}
+
+const addNewSplit = () => {
+  if (canAddSplit.value) {
+    emit('add-split', { ...newSplit })
+    clearNewSplit()
+  }
+}
+
+const clearNewSplit = () => {
+  newSplit.name = ''
+  newSplit.email = ''
+  newSplit.share = 0
+}
+
+const handleCopyFrom = (trackId: string) => {
+  emit('copy-from', trackId)
+  showCopyDropdown.value = false
+}
+</script>

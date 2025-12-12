@@ -1,35 +1,33 @@
 <template>
-  <div>
-    <!-- Plan selector tabs -->
-    <div class="fixed top-0 left-0 right-0 bg-white border-b border-medium-grey z-50 flex justify-center gap-1 sm:gap-2 p-2 sm:p-3 overflow-x-auto">
-      <button
-        v-for="p in tabs"
-        :key="p"
-        @click="currentTab = p"
-        class="px-2 sm:px-4 py-1.5 sm:py-2 rounded-button text-xs sm:text-sm font-medium font-satoshi transition-colors whitespace-nowrap shrink-0"
-        :class="currentTab === p ? 'bg-ditto-purple text-white' : 'bg-light-grey text-ditto-blue hover:bg-medium-grey'"
+  <div class="bg-white min-h-screen p-4 sm:p-6 md:p-8 flex flex-col items-center">
+    <!-- Demo toggle -->
+    <div class="mb-4 flex items-center gap-3 text-sm font-satoshi">
+      <span class="text-ditto-grey">Demo:</span>
+      <button 
+        @click="demo = 'populated'" 
+        class="px-3 py-1 rounded-full transition-colors"
+        :class="demo === 'populated' ? 'bg-brand-secondary text-white' : 'bg-light-grey text-ditto-grey hover:bg-faded-grey'"
       >
-        {{ p === 'DittoPlusRLS' ? '++ Label Services' : p }}
+        Populated
+      </button>
+      <button 
+        @click="demo = 'empty'" 
+        class="px-3 py-1 rounded-full transition-colors"
+        :class="demo === 'empty' ? 'bg-brand-secondary text-white' : 'bg-light-grey text-ditto-grey hover:bg-faded-grey'"
+      >
+        Empty
       </button>
     </div>
-
-    <!-- Content with top padding for fixed header -->
-    <div class="pt-16">
-      <div class="bg-white min-h-screen p-4 sm:p-6 md:p-8 flex justify-center">
-        <ServicesPurchasedView v-if="currentTab === 'Purchased'" />
-        <ServicesTab v-else :plan="currentTab as Plan" />
-      </div>
-    </div>
+    
+    <RoyaltySplitsPage :key="demo" :user-type="userType" :demo="demo" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { Plan } from './types'
-import ServicesTab from './components/ServicesTab.vue'
-import ServicesPurchasedView from './components/ServicesPurchasedView.vue'
+import type { UserType } from './types'
+import { RoyaltySplitsPage } from './components/royalty-splits'
 
-type Tab = Plan | 'Purchased'
-const tabs: Tab[] = ['Starter', 'Pro', 'Label', 'DittoPlusRLS', 'Purchased']
-const currentTab = ref<Tab>('Starter')
+const userType = ref<UserType>('subscription')
+const demo = ref<'populated' | 'empty'>('populated')
 </script>
