@@ -49,99 +49,6 @@
       </div>
     </div>
 
-    <!-- Pre-release Downloads Section -->
-    <div>
-      <SectionHeader
-        title="Pre-release Downloads"
-      />
-      <FeatureCard
-        title="Pre-release downloads"
-        description="Offer pre-orders of your music on iTunes and Amazon, granting fans early access and instant gratification with select tracks."
-        :checked="preReleaseSelected"
-        price="+£29"
-        @toggle="preReleaseSelected = !preReleaseSelected"
-      >
-        <template #icon><PreReleaseIcon /></template>
-        
-        <!-- Pre-release form -->
-        <div v-if="preReleaseSelected" class="space-y-5 pt-3" @click.stop>
-          <!-- Pre-order date picker -->
-          <div>
-            <label class="block text-sm text-ditto-blue font-satoshi font-medium mb-2">
-              Choose a Pre-order date
-            </label>
-            <div class="flex items-center gap-2 bg-white rounded-xl border border-faded-grey p-3 cursor-pointer hover:border-brand-secondary transition-all">
-              <span class="flex-1 text-base text-brand-secondary font-satoshi">{{ formattedPreOrderDate }}</span>
-              <ChevronIcon class="w-5 h-5 text-ditto-grey" />
-            </div>
-<p v-if="preOrderDateWarning" class="mt-2 text-xs text-brand-secondary font-satoshi">
-              We cannot guarantee your pre-release will go live in less than 3 days, but will make sure it is available in stores as soon as possible.
-            </p>
-          </div>
-          
-          <!-- Instant Gratification toggle -->
-          <div class="flex items-center gap-3">
-            <div class="relative group">
-              <label class="text-sm text-ditto-blue font-satoshi font-medium cursor-help">
-                Add Instant Gratification?
-              </label>
-              <div class="absolute bottom-full left-0 mb-2 px-3 py-2 bg-ditto-blue text-white text-xs rounded-lg w-72 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                Unlock selected tracks immediately when fans pre-order, giving them a taste of your release before launch. Great for building hype and incentivizing early purchases.
-                <div class="absolute top-full left-4 border-4 border-transparent border-t-ditto-blue"></div>
-              </div>
-            </div>
-            <button
-              @click="instantGratification = !instantGratification"
-              class="relative w-12 h-7 rounded-full transition-colors"
-              :class="instantGratification ? 'bg-success' : 'bg-faded-grey'"
-            >
-              <div
-                class="absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform"
-                :class="instantGratification ? 'translate-x-[22px]' : 'translate-x-0.5'"
-              />
-            </button>
-          </div>
-          
-          <!-- Instant Gratification Track selection (only show when toggle is on) -->
-          <div v-if="instantGratification">
-            <label class="block text-xs text-ditto-grey font-satoshi mb-2">
-              Select up to <span class="font-semibold">{{ maxInstantGratTracks }}</span> {{ maxInstantGratTracks > 1 ? 'tracks' : 'track' }}
-            </label>
-            <div class="flex flex-wrap gap-2">
-              <button
-                v-for="track in availableTracks"
-                :key="track"
-                @click="toggleInstantGratTrack(track)"
-                :disabled="!selectedInstantGratTracks.includes(track) && selectedInstantGratTracks.length >= maxInstantGratTracks"
-                class="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border text-sm font-satoshi transition-all"
-                :class="[
-                  selectedInstantGratTracks.includes(track) 
-                    ? 'border-brand-secondary text-ditto-blue' 
-                    : 'border-faded-grey text-ditto-grey',
-                  !selectedInstantGratTracks.includes(track) && selectedInstantGratTracks.length >= maxInstantGratTracks
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:border-brand-secondary cursor-pointer'
-                ]"
-              >
-                <div
-                  class="w-4 h-4 rounded border-2 flex items-center justify-center transition-all"
-                  :class="selectedInstantGratTracks.includes(track) ? 'border-brand-secondary bg-brand-secondary' : 'border-faded-grey'"
-                >
-                  <svg v-if="selectedInstantGratTracks.includes(track)" width="10" height="10" viewBox="0 0 24 24" fill="none">
-                    <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </div>
-                {{ track }}
-              </button>
-            </div>
-            <p v-if="selectedInstantGratTracks.length === 0" class="mt-2 text-xs text-error font-satoshi">
-              Please select at least one track
-            </p>
-          </div>
-        </div>
-      </FeatureCard>
-    </div>
-
     <!-- Distribution Services Section -->
     <div>
       <SectionHeader
@@ -149,6 +56,93 @@
         description="Expand your release's reach with additional distribution options."
       />
       <div class="flex flex-col gap-4">
+        <!-- Pre-release Downloads -->
+        <FeatureCard
+          title="Pre-release downloads"
+          description="Offer pre-orders of your music on iTunes and Amazon, granting fans early access and instant gratification with select tracks."
+          :checked="preReleaseSelected"
+          price="+£29"
+          @toggle="preReleaseSelected = !preReleaseSelected"
+        >
+          <template #icon><PreReleaseIcon /></template>
+          
+          <!-- Pre-release form -->
+          <div v-if="preReleaseSelected" class="space-y-5 pt-3 pr-20" @click.stop>
+            <!-- Pre-order date picker -->
+            <div>
+              <label class="block text-sm text-ditto-blue font-satoshi font-medium mb-2">
+                Choose a Pre-order date
+              </label>
+              <div class="flex items-center gap-2 bg-white rounded-xl border border-faded-grey p-3 cursor-pointer hover:border-brand-secondary transition-all">
+                <span class="flex-1 text-base text-brand-secondary font-satoshi">{{ formattedPreOrderDate }}</span>
+                <ChevronIcon class="w-5 h-5 text-ditto-grey" />
+              </div>
+              <p v-if="preOrderDateWarning" class="mt-2 text-xs text-brand-secondary font-satoshi">
+                We cannot guarantee your pre-release will go live in less than 3 days, but will make sure it is available in stores as soon as possible.
+              </p>
+            </div>
+            
+            <!-- Instant Gratification toggle -->
+            <div class="flex items-center gap-3">
+              <div class="relative group">
+                <label class="text-sm text-ditto-blue font-satoshi font-medium cursor-help">
+                  Add Instant Gratification?
+                </label>
+                <div class="absolute bottom-full left-0 mb-2 px-3 py-2 bg-ditto-blue text-white text-xs rounded-lg w-72 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                  Unlock selected tracks immediately when fans pre-order, giving them a taste of your release before launch. Great for building hype and incentivizing early purchases.
+                  <div class="absolute top-full left-4 border-4 border-transparent border-t-ditto-blue"></div>
+                </div>
+              </div>
+              <button
+                @click="instantGratification = !instantGratification"
+                class="relative w-12 h-7 rounded-full transition-colors"
+                :class="instantGratification ? 'bg-success' : 'bg-faded-grey'"
+              >
+                <div
+                  class="absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform"
+                  :class="instantGratification ? 'translate-x-[22px]' : 'translate-x-0.5'"
+                />
+              </button>
+            </div>
+            
+            <!-- Instant Gratification Track selection (only show when toggle is on) -->
+            <div v-if="instantGratification">
+              <label class="block text-xs text-ditto-grey font-satoshi mb-2">
+                Select up to <span class="font-semibold">{{ maxInstantGratTracks }}</span> {{ maxInstantGratTracks > 1 ? 'tracks' : 'track' }}
+              </label>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  v-for="track in availableTracks"
+                  :key="track"
+                  @click="toggleInstantGratTrack(track)"
+                  :disabled="!selectedInstantGratTracks.includes(track) && selectedInstantGratTracks.length >= maxInstantGratTracks"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium font-satoshi cursor-pointer transition-all border"
+                  :class="[
+                    selectedInstantGratTracks.includes(track) 
+                      ? 'border-brand-secondary bg-white text-brand-secondary' 
+                      : 'border-faded-grey bg-light-grey text-ditto-grey hover:border-brand-secondary/50',
+                    !selectedInstantGratTracks.includes(track) && selectedInstantGratTracks.length >= maxInstantGratTracks
+                      ? 'opacity-50 cursor-not-allowed'
+                      : ''
+                  ]"
+                >
+                  <svg 
+                    v-if="selectedInstantGratTracks.includes(track)" 
+                    width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    class="shrink-0"
+                  >
+                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  {{ track }}
+                </button>
+              </div>
+              <p v-if="selectedInstantGratTracks.length === 0" class="mt-2 text-xs text-error font-satoshi">
+                Please select at least one track
+              </p>
+            </div>
+          </div>
+        </FeatureCard>
+
         <!-- Auto-release - hidden for Ditto+ RLS (always on) -->
         <FeatureCard
           v-if="!isDittoPlus"

@@ -56,24 +56,6 @@
       </div>
     </div>
 
-    <!-- Pre-release Downloads Section -->
-    <div>
-      <SectionHeader
-        title="Pre-release Downloads"
-        description="Allow fans to download your release before the official release date."
-      />
-      <ServiceRow
-        title="Pre-release Downloads"
-        price="£29"
-        :selected="false"
-        status="unavailable"
-        unavailable-tooltip="This release is already live and no longer eligible for a pre-release campaign"
-        @toggle="() => {}"
-      >
-        <template #icon><PreReleaseIcon /></template>
-      </ServiceRow>
-    </div>
-
     <!-- Distribution Services Section -->
     <div>
       <SectionHeader
@@ -81,6 +63,17 @@
         description="Expand your release's reach with additional distribution options."
       />
       <div class="flex flex-col gap-4">
+        <!-- Pre-release Downloads -->
+        <FeatureCard
+          title="Pre-release downloads"
+          description="Offer pre-orders of your music on iTunes and Amazon, granting fans early access and instant gratification with select tracks."
+          :checked="false"
+          :disabled="true"
+          disabled-message="This release is already live and no longer eligible for a pre-release campaign"
+        >
+          <template #icon><PreReleaseIcon /></template>
+        </FeatureCard>
+
         <!-- Auto-release -->
         <FeatureCard
           title="Auto-release to new platforms"
