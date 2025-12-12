@@ -1,33 +1,35 @@
 <template>
-  <div class="bg-white min-h-screen p-4 sm:p-6 md:p-8 flex flex-col items-center">
-    <!-- Demo toggle -->
-    <div class="mb-4 flex items-center gap-3 text-sm font-satoshi">
-      <span class="text-ditto-grey">Demo:</span>
-      <button 
-        @click="demo = 'populated'" 
-        class="px-3 py-1 rounded-full transition-colors"
-        :class="demo === 'populated' ? 'bg-brand-secondary text-white' : 'bg-light-grey text-ditto-grey hover:bg-faded-grey'"
-      >
-        Populated
-      </button>
-      <button 
-        @click="demo = 'empty'" 
-        class="px-3 py-1 rounded-full transition-colors"
-        :class="demo === 'empty' ? 'bg-brand-secondary text-white' : 'bg-light-grey text-ditto-grey hover:bg-faded-grey'"
-      >
-        Empty
-      </button>
-    </div>
+  <div class="min-h-screen bg-lighter-grey">
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-faded-grey px-4 py-3">
+      <div class="max-w-4xl mx-auto flex items-center gap-4">
+        <span class="text-lg font-bold text-ditto-purple font-poppins">Ditto</span>
+        <div class="flex gap-2">
+          <router-link 
+            to="/services" 
+            class="px-4 py-2 rounded-full text-sm font-medium font-satoshi transition-colors"
+            :class="$route.path === '/services' 
+              ? 'bg-ditto-purple text-white' 
+              : 'text-ditto-grey hover:bg-light-grey'"
+          >
+            Services
+          </router-link>
+          <router-link 
+            to="/royalty-splits" 
+            class="px-4 py-2 rounded-full text-sm font-medium font-satoshi transition-colors"
+            :class="$route.path === '/royalty-splits' 
+              ? 'bg-ditto-purple text-white' 
+              : 'text-ditto-grey hover:bg-light-grey'"
+          >
+            Royalty Splits
+          </router-link>
+        </div>
+      </div>
+    </nav>
     
-    <RoyaltySplitsPage :key="demo" :user-type="userType" :demo="demo" />
+    <router-view />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { UserType } from './types'
-import { RoyaltySplitsPage } from './components/royalty-splits'
-
-const userType = ref<UserType>('subscription')
-const demo = ref<'populated' | 'empty'>('populated')
 </script>
